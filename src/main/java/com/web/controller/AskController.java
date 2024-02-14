@@ -43,7 +43,7 @@ public class AskController {
 
 	// Q&A 작성
 	@Transactional
-	@PostMapping(value = "/submitQuestion", consumes = "multipart/form-data" )
+	@PostMapping(value = "/submitQuestion", consumes = "multipart/form-data")
 	public Ask submitQuestion(@RequestPart(name = "file", required = false) MultipartFile file,
 			@RequestPart(name = "title") String title, @RequestPart(name = "content") String content) throws Exception {
 		Ask ask = new Ask();
