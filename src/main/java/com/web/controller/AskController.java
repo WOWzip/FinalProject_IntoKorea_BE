@@ -43,7 +43,7 @@ import com.web.service.MemberService;
 public class AskController {
 
 	@Autowired
-	private AskService askService;
+	private AskService askService; 
 	
 	
 
