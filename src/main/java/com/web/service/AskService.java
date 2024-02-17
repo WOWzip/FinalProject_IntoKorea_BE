@@ -19,7 +19,8 @@ public interface AskService {
 //    byte[] selectFile(Ask ask);
     
     // Q&A 목록
-    public List<Ask> getAllAsks();
+//    public List<Ask> getAllAsks();
+    List<Ask> getAllAsksInDescendingOrder();
     
     // Q&A 삭제
     public void deleteAskBySeq(Long seq);
@@ -27,8 +28,11 @@ public interface AskService {
     // Q&A 수정
     public Ask updateAsk(Ask ask);
     public Ask getAskBySeq(Long seq);
+    Ask attachFile(Ask ask, MultipartFile file) throws Exception;
     
     // Q&A 디테일
     public Ask getDetail(Long seq);
+    
+//    List<Ask> getAllAsksForCurrentUser(String userEmail);
 	
 }
