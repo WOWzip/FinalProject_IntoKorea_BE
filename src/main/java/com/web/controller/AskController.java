@@ -45,7 +45,7 @@ public class AskController {
 	@Autowired
 	private AskService askService; 
 	
-	
+	 
 
 	// Q&A 작성
 	@Transactional
