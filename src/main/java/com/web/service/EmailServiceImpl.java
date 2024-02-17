@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,9 +43,6 @@ public class EmailServiceImpl implements EmailService {
 	private RedisUtil redisUtil;
 	
     private final JavaMailSender javaMailSender;
-
-    // 인증번호 생성
-    private final String ePw = createKey();
     
     // 임시 비밀번호 생성
     private final String tempPwd = getTempPassword();
@@ -56,6 +54,7 @@ public class EmailServiceImpl implements EmailService {
     // 인증번호 만들기
     public static String createKey() {
         StringBuffer key = new StringBuffer();
+        
         Random rnd = new Random();
 
         for (int i = 0; i < 6; i++) { // 인증코드 6자리
@@ -65,20 +64,20 @@ public class EmailServiceImpl implements EmailService {
     }
     
     // 안내 메시지1
-    public MimeMessage createMessage(String to)throws MessagingException, UnsupportedEncodingException {
+    public MimeMessage createMessage(String to, String newEpw)throws MessagingException, UnsupportedEncodingException {
         log.info("보내는 대상 : "+ to);
-        log.info("인증 번호 : " + ePw);
+        log.info("인증 번호 : " + newEpw);
         MimeMessage  message = javaMailSender.createMimeMessage();
 
         message.addRecipients(MimeMessage.RecipientType.TO, to); // to 보내는 대상
-        message.setSubject("[IntoKorea] 회원가입 인증 코드 안내"); //메일 제목
+        message.setSubject("[IntoKorea] 인증 코드 안내"); //메일 제목
 
         // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
         String msg="";
-        msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">IntoKorea 회원가입 인증 코드 안내</h1>";
-        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">아래 확인 코드를 회원가입 화면에서 입력해주세요.</p>";
+        msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">IntoKorea 인증 코드 안내</h1>";
+        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">아래 확인 코드를 입력해주세요.</p>";
         msg += "<div style=\"padding-right: 30px; padding-left: 30px; margin: 32px 0 40px;\"><table style=\"border-collapse: collapse; border: 0; background-color: #F4F4F4; height: 70px; table-layout: fixed; word-wrap: break-word; border-radius: 6px;\"><tbody><tr><td style=\"text-align: center; vertical-align: middle; font-size: 30px;\">";
-        msg += ePw;
+        msg += newEpw;
         msg += "</td></tr></tbody></table></div>";
 
         message.setText(msg, "utf-8", "html"); //내용, charset타입, subtype
@@ -184,29 +183,44 @@ public class EmailServiceImpl implements EmailService {
     // 메일 발송1 (회원가입_인증번호)
     @Override
     public String sendCodeMessage(String to) throws Exception {
-    	MimeMessage message = createMessage(to);
+
+    	
+    	// 매번 이 메서드가 호출될 때 새로운 인증 코드를 생성합니다.
+    	String newEPw = createKey();
+    	
+    	// createMessage 메서드에 새로운 인증 코드를 전달합니다.
+    	MimeMessage message = createMessage(to, newEPw);
         try {
-        	System.out.println("ePW : " + ePw);
+        	System.out.println("새로 생성된 ePW : " + newEPw);
         	System.out.println("받는 이메일: " + to);
-            redisUtil.setDataExpire(ePw, to, 3*60L); // 유효시간 3분 (유효 시간 설정하여 Redis에 저장)
+            redisUtil.setDataExpire(to, newEPw , 3*60L); // key-value값: email-인증코드 / 유효시간 3분 (유효 시간 설정하여 Redis에 저장)
             javaMailSender.send(message); // 메일 발송
         } catch (MailException es) {
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return ePw; // 메일로 보냈던 인증 코드를 서버로 리턴
+        return newEPw; // 메일로 보냈던 인증 코드를 서버로 리턴
     }
     
     // 메일로 발송된 인증번호 유효한 인증번호인지 확인
     @Override
-    public boolean verifyCode(String key) throws NotFoundException {
-        String memberEmail = redisUtil.getData(key);
-        if (memberEmail == null) {
+    public boolean verifyCode(String code, String userEmail) throws NotFoundException {
+    	
+    	// 해당 이메일에 대한 인증코드값
+    	String EPw = redisUtil.getData(userEmail);
+        
+        System.out.println("EPw++" + EPw);
+        System.out.println("userEmail++" + userEmail);
+        
+        // 키 값이 만료된 경우, 입력한 이메일이 달라진 경우, 
+        if (EPw == null || !EPw.equals(code)) {
         	System.out.println("유효하지 않은 인증번호입니다.");
         	return false;
         }
-        System.out.println("입력받은 키 : "+ key);
-        redisUtil.deleteData(key);
+        
+        // 인증번호 확인 후 Redis에서 해당 키 값을 삭제
+        redisUtil.deleteData(userEmail);
+        System.out.println("입력받은 키 : "+ code);
         return true;
     }
     

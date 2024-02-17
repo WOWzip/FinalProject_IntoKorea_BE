@@ -67,13 +67,15 @@ public class OAuthController {
         String email = kakaoProfile.getKakao_account().getEmail();
         Member member = memberService.findByEmail(email);
         String nickName = member.getNickName();
+        String provider = member.getProvider();
         
         response.put("memberCheck", memberCheck);
         
         response.put("accessToken", accessToken);
         response.put("email", email);
         response.put("nickName" , nickName);
-//        response.put("nickName", kakaoProfile.getProperties().getNickname());
+        response.put("provider", provider);
+//      response.put("nickName", kakaoProfile.getProperties().getNickname());
       
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -28,7 +28,7 @@ public class Member {
 	
 	//(기본키)
 	@Id
-	@GeneratedValue
+	@GeneratedValue 
 	@Column(name = "MEMBER_SEQ")
 	private Long seq;
 	
@@ -81,3 +81,5 @@ public class Member {
 	}
 
 }
+
+// 참고) strategy 속성을 적지 않고 @GeneratedValue만 쓰면 GenerationType.AUTO가 적용되고, JPA에서 데이터베이스에 맞는 자동생성 전략을 선택합니다. (MYSQL은 IDENTITY, 오라클은 SEQUENCE)

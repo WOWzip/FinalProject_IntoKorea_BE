@@ -25,13 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 public interface EmailService {
 	
 
-    // 임시 비밀번호 생성
+    // 비밀번호 찾기 (임시 비밀번호 전송)
     public MimeMessage createPwdMessage(String to) throws MessagingException, UnsupportedEncodingException ;
 
-    // 아이디 존재 확인
+    // 아이디 찾기 (아이디 계정 정보 메시지 전송)
     public  MimeMessage createIdMessage(String to) throws MessagingException, UnsupportedEncodingException ;
     
-    // 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
+    // 임시비밀번호로 해당 유저의 패스워드 변경
     public void updatePassword(String userEmail, String tempPwd);
 
     
@@ -39,13 +39,13 @@ public interface EmailService {
     public String sendCodeMessage(String to) throws Exception;
     
     // 인증번호 유효한지 체크
-    public boolean verifyCode(String key) throws NotFoundException;
+    public boolean verifyCode(String code, String userEmail) throws NotFoundException;
     
     
     // 메일 발송2 (임시 비밀번호)
     public String sendPwdMessage(String to) throws Exception;
     
-    // 메일 발송3 (아이디)
+    // 메일 발송3 (아이디 계정)
     public void sendIdMessage(String to) throws Exception;
     
 }

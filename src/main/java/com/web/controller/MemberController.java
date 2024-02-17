@@ -43,20 +43,7 @@ public class MemberController {
 	@Autowired
 	private final EmailService emailService;
 
-	
-	// 회원가입 (react 연동x)
-//	@ResponseBody
-//	@PostMapping("/join")
-//	public String join(Member memberEntity) {
-//		
-//		System.out.println("memberEntity : " + memberEntity);
-//		// Perform user registration logic here
-//		memberService.registerMember(memberEntity);
-//
-//		return "회원가입 성공";
-//	}
-//	
-	
+
 	/** 일반 회원가입 **/
 
 	// 회원가입(React와 연동)
@@ -64,7 +51,6 @@ public class MemberController {
 	public ResponseEntity<String> join(@RequestBody Member memberEntity) throws IOException {
 		
 		System.out.println("memberEntity : " + memberEntity);
-		// Perform user registration logic here
 		memberService.registerMember(memberEntity);
 
 		return new ResponseEntity<>("Member registered successfully", HttpStatus.OK);
@@ -85,9 +71,9 @@ public class MemberController {
 	
 	// 인증번호 유효성 체크
 	@GetMapping("/emails/verifyCode")
-    public boolean verifyCode(@RequestParam("code") String authCode) throws NotFoundException {
-		System.out.println("epw:::" + authCode);
-        boolean verifyCode = emailService.verifyCode(authCode);
+    public boolean verifyCode(@RequestParam("code") String authCode, @RequestParam("userEmail") String userEmail) throws NotFoundException {
+		System.out.println("입력받은 키:::" + authCode + "입력된 이메일 : " + userEmail);
+        boolean verifyCode = emailService.verifyCode(authCode, userEmail);
 
         return verifyCode;
     }
@@ -107,6 +93,7 @@ public class MemberController {
 		
 		// 존재하지 않는 이메일일 경우
 		if (optional.isEmpty()) { 
+			map.put("check", "0");
 			map.put("msg", "Email를 확인해 주세요");
 			return map;
 		}
@@ -115,7 +102,9 @@ public class MemberController {
 		// 계정 체크 
 		Member member = optional.get();
 		if(!member.getProvider().equals("none")) {
+			map.put("check", "1");
 			map.put("msg", "소셜로 가입된 계정입니다.");
+			map.put("provider", member.getProvider());
 			return map;
 		}
 		
@@ -124,12 +113,14 @@ public class MemberController {
 		boolean checkPassword = passwordEncoder.matches(password, member.getPassword()); // 입력한 패스워드가 맞으면 true 반환
 		System.out.println(checkPassword);
 		if (checkPassword == false) {
+			map.put("check", "21");
 			map.put("msg", "비밀번호를 확인해 주세요");
 			return map;
 		} else {
 			map.put("msg", "로그인 성공");
-			map.put("check", "true");
+			map.put("check", "22");
 			map.put("nickName", member.getNickName());
+			map.put("provider", member.getProvider());
 			return map;
 		}
 	}
@@ -198,7 +189,7 @@ public class MemberController {
         return code;
     }
     
-    
+   
     
     /** 비밀번호 변경 **/
     // 1. 비밀번호 학인
@@ -214,21 +205,31 @@ public class MemberController {
 		
 		// 존재하지 않는 이메일일 경우
 		if (optional.isEmpty()) { 
-			map.put("msg", "다시 로그인 해주세요");
+			map.put("check", "0");
+			map.put("msg", "다시 로그인해 주세요");
 			return map;
 		}
 
 		
-		// 이메일이 존재할 경우, 패스워드 체크
+		// 이메일이 존재할 경우, 
+		// 계정 체크 
 		Member member = optional.get();
+		if(!member.getProvider().equals("none")) {
+			map.put("check", "1");
+			map.put("msg", "소셜로 가입된 계정입니다.");
+			return map;
+		}
+		
+		//패스워드 체크
 		boolean checkPassword = passwordEncoder.matches(password, member.getPassword()); // 입력한 패스워드가 맞으면 true 반환
 		System.out.println(checkPassword);
 		if (checkPassword == false) {
+			map.put("check", "21");
 			map.put("msg", "비밀번호를 확인해 주세요");
 			return map;
 		} else {
+			map.put("check", "22");
 			map.put("msg", "비밀번호 확인 성공");
-			map.put("check", "true");
 			return map;
 		}
 	}
@@ -251,5 +252,15 @@ public class MemberController {
     	String nickName = member.getNickName();
         memberService.updateNickName(email, nickName);
     }
+    
+    
+    /** 회원 탈퇴 **/
+    @PostMapping("/deleteUser")
+    public boolean deleteUser(@RequestParam("userEmail") String userEmail) throws Exception {
+    	System.out.println("입력받은 키 : " + userEmail);
+    	boolean existUser = memberService.delete(userEmail);
+    	return existUser;
+    }
+
     
 }

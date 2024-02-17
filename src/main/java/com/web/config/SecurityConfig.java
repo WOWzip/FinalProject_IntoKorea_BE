@@ -51,8 +51,8 @@ public class SecurityConfig {
         http    
         		.authorizeRequests(requests -> requests
 //        		   .antMatchers("/checkPwd", "/modify**").authenticated()
-                   .antMatchers("/user/**").hasRole("USER")
-                   .antMatchers("/admin/**").hasRole("ADMIN")
+//                   .antMatchers("/user/**").hasRole("USER")
+//                   .antMatchers("/admin/**").hasRole("ADMIN")
                    .anyRequest().permitAll());
 	    http    
 	    		.formLogin(login -> login
@@ -64,6 +64,7 @@ public class SecurityConfig {
         http    
         		.logout(logout -> logout
         				.invalidateHttpSession(true).logoutSuccessUrl("/"));	// logout 요청시 홈으로 이동
+        
         http    
         		.oauth2Login(login -> login
                    .loginPage("/loginForm")
