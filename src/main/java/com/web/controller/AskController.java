@@ -42,7 +42,7 @@ import com.web.service.MemberService;
 @RequestMapping("/mypage")
 public class AskController {
 
-	@Autowired
+	@Autowired 
 	private AskService askService; 
 	
 	 
