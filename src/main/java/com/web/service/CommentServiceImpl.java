@@ -33,4 +33,5 @@ public class CommentServiceImpl implements CommentService {
     public void deleteAnswerBycommentSeq(Long commentSeq) {
     	commentRepo.deleteAnswerBycommentSeq(commentSeq);
     }
+    
 }

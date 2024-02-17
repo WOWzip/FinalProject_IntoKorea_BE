@@ -43,13 +43,19 @@ public class Diary {
     
     private String theme;
     
-    @JsonFormat(pattern="yyyy.MM.dd")
     @Column(name = "visit_date")
     private Date visitDate;
+    
+    @Column(name = "finish_date")
+    private Date finishDate;
+    
+    
     
 	@JsonFormat(pattern="yyyy.MM.dd")
 	@Column(insertable = false, updatable = false, columnDefinition = "date default sysdate")
 	private Date ddate;   
 	
+	@Column(updatable = false)
+	private String email;
 	
 }

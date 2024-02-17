@@ -22,4 +22,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
 	// provider로 조회
 	Optional<Member> findByEmailAndProvider(String email, String provider);
 	
+	
 }

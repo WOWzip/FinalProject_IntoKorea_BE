@@ -40,4 +40,13 @@ public class Comment {
 	@JsonFormat(pattern = "yyyy.MM.dd")
 	@Column(insertable = false, updatable = false, columnDefinition = "date default sysdate")
 	private Date commentDate;
+	
+	@Column(updatable = false)
+	private String email;
+	
+	@Column
+	private String nickName;
+	
+    // 답변 상태
+    private String ready = "처리중";
 }

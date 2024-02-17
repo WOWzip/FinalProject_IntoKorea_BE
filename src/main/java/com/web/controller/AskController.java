@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,23 +33,36 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.web.domain.Ask;
+import com.web.domain.Member;
 import com.web.service.AskService;
+import com.web.service.CommentService;
+import com.web.service.MemberService;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RequestMapping("/mypage")
 public class AskController {
 
-	@Autowired
-	private AskService askService;
+	@Autowired 
+	private AskService askService; 
+	
+	  
 
 	// Q&A 작성
 	@Transactional
 	@PostMapping(value = "/submitQuestion", consumes = "multipart/form-data" )
-	public Ask submitQuestion(@RequestPart(name = "file", required = false) MultipartFile file,
-			@RequestPart(name = "title") String title, @RequestPart(name = "content") String content) throws Exception {
+	public Ask submitQuestion(
+			@RequestPart(name = "file", required = false) MultipartFile file,
+			@RequestPart(name = "title") String title, 
+			@RequestPart(name = "content") String content, 
+			@RequestPart(name="email") String email,
+			@RequestPart(name="nickName") String nickName
+	) throws Exception {
+		
 		Ask ask = new Ask();
 		ask.setTitle(title);
 		ask.setContent(content);
+		ask.setEmail(email);
+		ask.setNickName(nickName);
 
 		if (file != null) {
 			askService.attachfile(ask, file);
@@ -56,62 +70,6 @@ public class AskController {
 		return askService.saveAsk(ask);
 	}
 	
-	
-	
-//	// 첨부파일 다운로드
-//	@Transactional
-//	@GetMapping("/download/{seq}")
-//	public ResponseEntity<Resource> downloadFile(@PathVariable Long seq, HttpServletResponse response) {
-//	    Ask ask = askService.getAskBySeq(seq);
-//
-//	    if (ask == null || ask.getFilename() == null || ask.getFilepath() == null) {
-//	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	    }
-//
-//	    // 파일경로
-//	    Path filePath = Paths.get("C:/Users/LJW/ikfront/Front-End/src/files", ask.getFilename());
-//	    Resource resource;
-//
-//	    try {
-//	        resource = new UrlResource(filePath.toUri());
-//	    } catch (IOException e) {
-//	        e.printStackTrace();
-//	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	    }
-//
-//	    // 다운로드 파일 이름 설정
-//	    String contentType;
-//	    try {
-//	        contentType = Files.probeContentType(filePath);
-//	    } catch (IOException e) {
-//	        e.printStackTrace();
-//	        contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-//	    }
-//
-//	    // 다운로드 헤더 설정
-//	    return ResponseEntity.ok()
-//	            .contentType(MediaType.parseMediaType(contentType))
-//	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + ask.getFilename() + "\"")
-//	            .body(resource);
-//	}
-	 
-//	//첨부파일 다운로드
-//	@GetMapping(value = "C:/Users/LJW/ikfront/Front-End/src/files")
-//	public ResponseEntity<ByteArrayResource> downloadFile(Ask ask){
-//		
-//		byte[] fileData = askService.selectFile(ask);
-//		
-//		if (fileData != null) {
-//			ByteArrayResource resource = new ByteArrayResource(fileData);
-//			
-//			return ResponseEntity.ok()
-//					.contentType(MediaType.APPLICATION_OCTET_STREAM)
-//					.contentLength(fileData.length)
-//					.body(resource);
-//		} else {
-//			return ResponseEntity.notFound().build();
-//		}
-//	}
 	
 	// 파일 다운로드
 	@Transactional
@@ -150,12 +108,18 @@ public class AskController {
 	            .body(resource);
 	}	
 
-	// Q&A 목록
-	@GetMapping("/getAllAsks")
-	public List<Ask> getAllAsks() {
-		return askService.getAllAsks();
-	}
-
+//	// Q&A 목록
+//	@GetMapping("/getAllAsks")
+//	public List<Ask> getAllAsks() {
+//		return askService.getAllAsks();
+//	}
+	
+	// Q&A 목록 최신순
+    @GetMapping("/getAllAsks")
+    public List<Ask> getAllAsks() {
+        return askService.getAllAsksInDescendingOrder();
+    }	
+	
 	// Q&A 삭제
 	@Transactional
 	@DeleteMapping("/deleteAsk/{seq}")
@@ -163,12 +127,37 @@ public class AskController {
 		askService.deleteAskBySeq(seq);
 	}
 
-	// Q&A 수정
+//	// Q&A 수정
+//	@PutMapping("/updateAsk")
+//	public Ask updateAsk(@RequestBody Ask ask) {
+//		System.out.println(ask);
+//		return askService.updateAsk(ask);
+//	}
+    // Q&A 수정
+	@Transactional
 	@PutMapping("/updateAsk")
-	public Ask updateAsk(@RequestBody Ask ask) {
-		System.out.println(ask);
+	public Ask updateAsk(
+			@RequestParam(name ="file", required = false) MultipartFile file,
+			@RequestParam(name ="seq") Long seq,
+			@RequestParam(name ="title") String title,
+			@RequestParam(name = "content") String content,
+			@RequestPart(name = "email") String email,
+			@RequestPart(name = "nickName") String nickName
+			) throws Exception {
+		Ask ask = new Ask();
+		ask.setSeq(seq);
+		ask.setTitle(title);
+		ask.setContent(content);
+		ask.setEmail(email);
+		ask.setNickName(nickName);
+		
+		if (file != null) {
+			askService.attachFile(ask, file);
+		}
 		return askService.updateAsk(ask);
 	}
+	
+	
 
 	@GetMapping("/getAsk/{seq}")
 	public Ask getAskBySeq(@PathVariable Long seq) {
@@ -186,6 +175,24 @@ public class AskController {
 		result.put("ask1", ask1);
 		return result;
 	}
+	
+    // 매니저 답변 작성
+    @Transactional
+    @PostMapping("/submitAnswer")
+    public ResponseEntity<?> submitAnswer(@RequestParam Long seq) {
+        Ask ask = askService.getAskBySeq(seq);
+        if (ask == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // 답변 완료로 상태 변경
+        ask.markAsAnswered();
+        askService.saveAsk(ask);
+        
+        return ResponseEntity.ok().build();
+    }	
+	
+
 
 }
 

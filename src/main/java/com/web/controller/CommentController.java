@@ -47,4 +47,6 @@ public class CommentController {
     public void deleteComment(@PathVariable Long commentSeq) {
     	commentService.deleteAnswerBycommentSeq(commentSeq);
     }
+    
+
 }

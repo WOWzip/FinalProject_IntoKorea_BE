@@ -18,4 +18,5 @@ public interface CommentService {
 	// 댓글 삭제
 	public void deleteAnswerBycommentSeq(Long commentSeq);
 
+	
 }

@@ -34,6 +34,7 @@ public class DiaryServiceImpl implements DiaryService {
 	@Override
 	public void attachimage(Diary diary, MultipartFile image) throws Exception {
 		String projectPath = "C://Users//LJW//ikfront//Front-End//public//picture";
+//    	System.getProperty("user.dir") + "\\src\\main\\resources\\static\\picture";
 		
 		UUID uuid = UUID.randomUUID();
 		
@@ -103,6 +104,8 @@ public class DiaryServiceImpl implements DiaryService {
 			existingDiary.setDcontent(diary.getDcontent());
 			existingDiary.setLocation(diary.getLocation());
 			existingDiary.setRating(diary.getRating());
+			existingDiary.setVisitDate(diary.getVisitDate());
+			existingDiary.setFinishDate(diary.getFinishDate());
 			return diaryRepo.save(existingDiary);
 		} else {
 			return null;
