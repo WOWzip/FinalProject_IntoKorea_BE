@@ -145,14 +145,15 @@ public class MemberServiceImpl implements MemberService{
     /** User 삭제 */
     @Transactional
     @Override
-    public void delete(String email) {
+    public boolean delete(String email) {
     	Optional<Member> optional = this.memberRepository.findByEmail(email);
     	if(optional.isEmpty()) {
     		new IllegalArgumentException("해당 유저를 찾을 수 없습니다. user_email = " + email);
+    		return false;
     	}
     	Member member = optional.get();
     	memberRepository.delete(member);
-
+    	return true;
     }
 
 }

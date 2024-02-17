@@ -2,6 +2,8 @@ package com.web.service;
 
 import java.time.Duration;
 
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class RedisUtil {
         return valueOperations.get(key);
     }
 
-    // 유효 시간 동안(key, value)저장
+    // 유효 시간 동안(key, value)저장 
     public void setDataExpire(String key, String value, long duration) {
         ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
         Duration expireDuration = Duration.ofSeconds(duration);
@@ -29,6 +31,7 @@ public class RedisUtil {
     public void deleteData(String key) {
         stringRedisTemplate.delete(key);
     }
+    
 }
 
 /** Redis
