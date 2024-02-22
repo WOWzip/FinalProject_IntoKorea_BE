@@ -17,4 +17,5 @@ public interface AskRepository extends JpaRepository<Ask, Long> {
 	
 	// SEQ 높은순서로 목록
 	List<Ask> findAllByOrderBySeqDesc();
+	
 }

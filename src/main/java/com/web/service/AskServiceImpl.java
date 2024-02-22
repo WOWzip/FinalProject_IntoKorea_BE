@@ -22,16 +22,16 @@ import com.web.persistence.AskRepository;
 public class AskServiceImpl implements AskService {
 
 
-	@Autowired
-	private AskRepository askRepo;
-	
+   @Autowired
+   private AskRepository askRepo;
+   
     @Autowired
     private MemberService memberService;
 
-	// Q&A 작성
+   // Q&A 작성
     @Override
     public Ask saveAsk(Ask ask){
-    	
+       
 
         return askRepo.save(ask);
     }
@@ -39,35 +39,35 @@ public class AskServiceImpl implements AskService {
     // 첨부파일
     @Override
     public void attachfile(Ask ask, MultipartFile file) throws Exception {
-    	
-    	String projectPath = "C://Users//LJW//ikfront//Front-End//src//files";
+       
+       String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
 
-    	UUID uuid = UUID.randomUUID();
-    	
-    	String fileName = uuid + "_" + file.getOriginalFilename();
-    	
-    	File saveFile = new File(projectPath, fileName);
-    	
-    	file.transferTo(saveFile);
-    	
-    	ask.setFilename(fileName);
-    	ask.setFilepath("/files/"+fileName);
-    	
-    	askRepo.save(ask);
-    	
+       UUID uuid = UUID.randomUUID();
+       
+       String fileName = uuid + "_" + file.getOriginalFilename();
+       
+       File saveFile = new File(projectPath, fileName);
+       
+       file.transferTo(saveFile);
+       
+       ask.setFilename(fileName);
+       ask.setFilepath("/files/"+fileName);
+       
+       askRepo.save(ask);
+       
     }
     
-	
-	// Q&A 목록
-//	@Override
-//	 public List<Ask> getAllAsks(){
-//		return (List<Ask>) askRepo.findAll();
-//	}
+   
+   // Q&A 목록
+//   @Override
+//    public List<Ask> getAllAsks(){
+//      return (List<Ask>) askRepo.findAll();
+//   }
     @Override
     public List<Ask> getAllAsksInDescendingOrder() {
         return askRepo.findAllByOrderBySeqDesc();
     }
-	// Q&A 삭제
+   // Q&A 삭제
     @Override
     public void deleteAskBySeq(Long seq) {
         askRepo.deleteBySeq(seq);
@@ -82,46 +82,47 @@ public class AskServiceImpl implements AskService {
     // 수정
     @Override
     public Ask updateAsk(Ask ask) {
-    	Long seq = ask.getSeq();
-    	Ask exAsk = askRepo.findBySeq(seq);
-    	
-    	if (exAsk != null) {
-    		exAsk.setTitle(ask.getTitle());
-    		exAsk.setContent(ask.getContent());
-    		return askRepo.save(exAsk);
-    	} else {
-    		return null;
-    	}
+       Long seq = ask.getSeq();
+       Ask exAsk = askRepo.findBySeq(seq);
+       
+       if (exAsk != null) {
+          exAsk.setTitle(ask.getTitle());
+          exAsk.setContent(ask.getContent());
+          return askRepo.save(exAsk);
+       } else {
+          return null;
+       }
     }
     @Override
     public Ask attachFile(Ask ask, MultipartFile file) throws Exception {
-    	if (file != null && !file.isEmpty()) {
-        	String projectPath = "C://Users//LJW//ikfront//Front-End//src//files";
+       if (file != null && !file.isEmpty()) {
+           String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+//                 "C://Users//LJW//ikfront//Front-End//src//files";
 
-        	UUID uuid = UUID.randomUUID();
-        	
-        	String fileName = uuid + "_" + file.getOriginalFilename();
-        	
-        	File saveFile = new File(projectPath, fileName);
-        	
-        	file.transferTo(saveFile);
-        	
-        	ask.setFilename(fileName);
-        	ask.setFilepath("/files/"+fileName);
-    	}
-    	return askRepo.save(ask);
+           UUID uuid = UUID.randomUUID();
+           
+           String fileName = uuid + "_" + file.getOriginalFilename();
+           
+           File saveFile = new File(projectPath, fileName);
+           
+           file.transferTo(saveFile);
+           
+           ask.setFilename(fileName);
+           ask.setFilepath("/files/"+fileName);
+       }
+       return askRepo.save(ask);
     }
     
     
     @Override
     public Ask getAskBySeq(Long seq) {
-    	return askRepo.findBySeq(seq);
+       return askRepo.findBySeq(seq);
     }
     
     // Q&A 디테일
     @Override
     public Ask getDetail(Long seq) {
-    	return askRepo.findById(seq).orElse(null);
+       return askRepo.findById(seq).orElse(null);
     }
     
 //    @Override
