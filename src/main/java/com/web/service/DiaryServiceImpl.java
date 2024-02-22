@@ -15,42 +15,41 @@ import com.web.persistence.DiaryRepository;
 
 @Service
 public class DiaryServiceImpl implements DiaryService {
-	
-	@Autowired
-	private DiaryRepository diaryRepo;
-	
-	// 다이어리 작성
-	@Override
-	public Diary save(Diary diary) {
-		return diaryRepo.save(diary);
-	}
-	
-	// 다이어리 작성 + 이미지
-	@Override
-	public Diary saveDiary(Diary diary) {
-		
-		return diaryRepo.save(diary);
-	}
-	@Override
-	public void attachimage(Diary diary, MultipartFile image) throws Exception {
-		String projectPath = "C://Users//LJW//ikfront//Front-End//public//picture";
-//    	System.getProperty("user.dir") + "\\src\\main\\resources\\static\\picture";
-		
-		UUID uuid = UUID.randomUUID();
-		
-		String imageName = uuid + "_" + image.getOriginalFilename();
-		
-		File saveImage = new File(projectPath, imageName);
-		
-		image.transferTo(saveImage);
-		
-		diary.setDimage(imageName);
-		diary.setDimagepath("/picture/"+imageName);
-		
-		diaryRepo.save(diary);
-	}
-	
-	// visitdate
+   
+   @Autowired
+   private DiaryRepository diaryRepo;
+   
+   // 다이어리 작성
+   @Override
+   public Diary save(Diary diary) {
+      return diaryRepo.save(diary);
+   }
+   
+   // 다이어리 작성 + 이미지
+   @Override
+   public Diary saveDiary(Diary diary) {
+      
+      return diaryRepo.save(diary);
+   }
+   @Override
+   public void attachimage(Diary diary, MultipartFile image) throws Exception {
+      String projectPath = "D://_FinalProject//WorkFront//intokorea//public//picture";
+      
+      UUID uuid = UUID.randomUUID();
+      
+      String imageName = uuid + "_" + image.getOriginalFilename();
+      
+      File saveImage = new File(projectPath, imageName);
+      
+      image.transferTo(saveImage);
+      
+      diary.setDimage(imageName);
+      diary.setDimagepath("/picture/"+imageName);
+      
+      diaryRepo.save(diary);
+   }
+   
+   // visitdate
     @Override
     public Diary saveVisitDate(Long seq, Date visitDate) {
         Diary diary = diaryRepo.findById(seq).orElse(null);
@@ -62,16 +61,16 @@ public class DiaryServiceImpl implements DiaryService {
             return null; // 혹은 예외 처리를 수행할 수 있습니다.
         }
     }
-	
-	
-	
-	// 다이어리 목록
-	@Override
-	public List<Diary> getAllDiarys(){
-		return (List<Diary>) diaryRepo.findAll();
-	}
+   
+   
+   
+   // 다이어리 목록
+   @Override
+   public List<Diary> getAllDiarys(){
+      return (List<Diary>) diaryRepo.findAll();
+   }
 
-	// 다이어리 검색
+   // 다이어리 검색
     @Override
     public List<Diary> searchDiary(String searchType, String keyword) {
         switch (searchType) {
@@ -85,37 +84,35 @@ public class DiaryServiceImpl implements DiaryService {
                 return Collections.emptyList();
         }
     }
-	
-	
-	// 다이어리 삭제
-	@Override
-	public void deleteDiaryBySeq(Long seq) {
-		diaryRepo.deleteBySeq(seq);
-	}
-	
-	// 다이어리 수정
-	@Override
-	public Diary updateDiary(Diary diary) {
-		Long seq = diary.getSeq();
-		Diary existingDiary = diaryRepo.findBySeq(seq);
-		
-		if (existingDiary != null) {
-			existingDiary.setDtitle(diary.getDtitle());
-			existingDiary.setDcontent(diary.getDcontent());
-			existingDiary.setLocation(diary.getLocation());
-			existingDiary.setRating(diary.getRating());
-			existingDiary.setVisitDate(diary.getVisitDate());
-			existingDiary.setFinishDate(diary.getFinishDate());
-			return diaryRepo.save(existingDiary);
-		} else {
-			return null;
-		}
-		
-	}
+   
+   
+   // 다이어리 삭제
+   @Override
+   public void deleteDiaryBySeq(Long seq) {
+      diaryRepo.deleteBySeq(seq);
+   }
+   
+   // 다이어리 수정
+   @Override
+   public Diary updateDiary(Diary diary) {
+      Long seq = diary.getSeq();
+      Diary existingDiary = diaryRepo.findBySeq(seq);
+      
+      if (existingDiary != null) {
+         existingDiary.setDtitle(diary.getDtitle());
+         existingDiary.setDcontent(diary.getDcontent());
+         existingDiary.setLocation(diary.getLocation());
+         existingDiary.setRating(diary.getRating());
+         return diaryRepo.save(existingDiary);
+      } else {
+         return null;
+      }
+      
+   }
     @Override
     public Diary attachImage(Diary diary, MultipartFile image) throws Exception {
         if (image != null && !image.isEmpty()) {
-            String projectPath = "C://Users//LJW//ikfront//Front-End//public//picture";
+            String projectPath = "D:/_FinalProject/WorkFront/intokorea/public/picture";
             UUID uuid = UUID.randomUUID();
             String imageName = uuid + "_" + image.getOriginalFilename();
             File saveImage = new File(projectPath, imageName);
@@ -125,24 +122,23 @@ public class DiaryServiceImpl implements DiaryService {
             diary.setDimagepath("/picture/" + imageName);
         }
         return diaryRepo.save(diary);
-    }	
-	
-	
-	
-	@Override
-	public Diary getDiaryBySeq(Long seq) {
-		return diaryRepo.findBySeq(seq);
-	}
-	
-	// 다이어리 상세보기
-	@Override
-	public Diary getDiaryDetail(Long seq) {
-		return diaryRepo.findById(seq).orElse(null);
-	}
-	
-	
+    }   
+   
+   
+   
+   @Override
+   public Diary getDiaryBySeq(Long seq) {
+      return diaryRepo.findBySeq(seq);
+   }
+   
+   // 다이어리 상세보기
+   @Override
+   public Diary getDiaryDetail(Long seq) {
+      return diaryRepo.findById(seq).orElse(null);
+   }
+   
+   
 }
-
 
 
 

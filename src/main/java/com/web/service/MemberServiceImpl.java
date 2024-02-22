@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.web.domain.Member;
 import com.web.domain.Role;
+import com.web.persistence.AskRepository;
+import com.web.persistence.BookmarkRepository;
+import com.web.persistence.CommentRepository;
+import com.web.persistence.DiaryRepository;
 import com.web.persistence.MemberRepository;
 
 @Service
@@ -153,6 +157,7 @@ public class MemberServiceImpl implements MemberService{
     	}
     	Member member = optional.get();
     	memberRepository.delete(member);
+    	
     	return true;
     }
 
