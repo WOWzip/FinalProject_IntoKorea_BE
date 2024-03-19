@@ -6,9 +6,6 @@
 ---
 
 ## 기술 스택
-### 프론트엔드
-  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white">
-  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white">
 
 ### 백엔드  
 - Java 11
@@ -59,10 +56,11 @@
 
 ---
 
-### ERD
-![image](https://github.com/WOWzip/FinalProject_IntoKorea_BE/assets/142926896/d71afe18-8c26-4927-aa57-833055236ee8)
+## ERD
+<img src="https://github.com/WOWzip/FinalProject_IntoKorea_BE/assets/142926896/d71afe18-8c26-4927-aa57-833055236ee8" width="80%" height="80%"/>
 
+---
 
-### 흐름도
-![image](https://github.com/WOWzip/FinalProject_IntoKorea_BE/assets/142926896/f6926054-caf8-4a5f-88ba-e268d4a5e2b8)
+## 흐름도
+<img src="https://github.com/WOWzip/FinalProject_IntoKorea_BE/assets/142926896/f6926054-caf8-4a5f-88ba-e268d4a5e2b8)https://github.com/WOWzip/FinalProject_IntoKorea_BE/assets/142926896/f6926054-caf8-4a5f-88ba-e268d4a5e2b8" width="70%" height="60%"/>
 
